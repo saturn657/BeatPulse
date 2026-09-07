@@ -37,6 +37,10 @@ const registerUser=async(req,res)=>{
     }
 }
 
+const getMe=(req,res)=>{
+    res.json(req.user)
+}
+
 const loginUser=async(req,res)=>{
     try{
         const {email,password}=req.body
@@ -77,4 +81,4 @@ const loginUser=async(req,res)=>{
     }
 }
 
-module.exports={registerUser,loginUser}
+module.exports={registerUser,loginUser,getMe}
