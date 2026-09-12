@@ -51,4 +51,18 @@ if(search){
     }
 }
 
-module.exports={addMusic,getMusic}
+const getMusicById=async(req,res)=>{
+    try{
+        const music=await Music.findById(req.params.id)
+
+        if(!music){
+            return res.status(404).json({message:"Music not found"})
+        }
+
+        res.json(music)
+    }catch(error){
+        res.status(500).json({message:"Failed to fetch music"})
+    }
+}
+
+module.exports={addMusic,getMusic,getMusicById}
