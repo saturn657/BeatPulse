@@ -94,4 +94,20 @@ const updateMusic=async(req,res)=>{
     }
 }
 
-module.exports={addMusic,getMusic,getMusicById,updateMusic}
+const deleteMusic=async(req,res)=>{
+    try{
+        const music=await Music.findById(req.params.id)
+
+        if(!music){
+            return res.status(404).json({message:"Music not found"})
+        }
+
+        await music.deleteOne()
+
+        res.json({message:"Music deleted successfully"})
+    }catch(error){
+        res.status(500).json({message:"Failed to delete music"})
+    }
+}
+
+module.exports={addMusic,getMusic,getMusicById,updateMusic,deleteMusic}
