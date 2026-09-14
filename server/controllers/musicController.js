@@ -110,4 +110,17 @@ const deleteMusic=async(req,res)=>{
     }
 }
 
-module.exports={addMusic,getMusic,getMusicById,updateMusic,deleteMusic}
+const getMusicCategories=async(req,res)=>{
+    try{
+        const artists=await Music.distinct("artist")
+        const albums=await Music.distinct("album")
+        const genres=await Music.distinct("genre")
+
+        res.json({artists,albums,genres})
+    }catch(error){
+        res.status(500).json({message:"Failed to fetch categories"})
+    }
+}
+
+
+module.exports={addMusic,getMusic,getMusicById,updateMusic,deleteMusic,getMusicCategories}
