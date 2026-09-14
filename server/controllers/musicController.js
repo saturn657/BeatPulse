@@ -65,4 +65,33 @@ const getMusicById=async(req,res)=>{
     }
 }
 
-module.exports={addMusic,getMusic,getMusicById}
+const updateMusic=async(req,res)=>{
+    try{
+        const {title,artist,album,genre,coverImage,audioUrl,duration}=req.body
+
+        const music=await Music.findById(req.params.id)
+
+        if(!music){
+            return res.status(404).json({message:"Music not found"})
+        }
+
+        if(title!==undefined) music.title=title
+        if(artist!==undefined) music.artist=artist
+        if(album!==undefined) music.album=album
+        if(genre!==undefined) music.genre=genre
+        if(coverImage!==undefined) music.coverImage=coverImage
+        if(audioUrl!==undefined) music.audioUrl=audioUrl
+        if(duration!==undefined) music.duration=duration
+
+        await music.save()
+
+        res.json({
+            message:"Music updated successfully",
+            music
+        })
+    }catch(error){
+        res.status(500).json({message:"Failed to update music"})
+    }
+}
+
+module.exports={addMusic,getMusic,getMusicById,updateMusic}
