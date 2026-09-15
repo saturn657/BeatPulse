@@ -3,6 +3,7 @@ const dotenv=require("dotenv")
 const connectDB=require("./config/db")
 const authRoutes=require("./routes/authRoutes")
 const musicRoutes=require("./routes/musicRoutes")
+const favoriteRoutes=require("./routes/favoriteRoutes")
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ const PORT=5000
 app.use(express.json())
 app.use("/api/auth",authRoutes)
 app.use("/api/music",musicRoutes)
+app.use("/api/favorites",favoriteRoutes)
 
 app.get("/",(req,res)=>{
     res.json({message:"BeatPulse server is running"})
