@@ -43,4 +43,25 @@ const getFavorites=async(req,res)=>{
     }
 }
 
-module.exports={addFavorite,getFavorites}
+const removeFavorite=async(req,res)=>{
+    try{
+        const {musicId}=req.params
+
+        const favorite=await Favorite.findOne({
+            user:req.user._id,
+            music:musicId
+        })
+
+        if(!favorite){
+            return res.status(404).json({message:"Favorite not found"})
+        }
+
+        await favorite.deleteOne()
+
+        res.json({message:"Music removed from favorites"})
+    }catch(error){
+        res.status(500).json({message:"Failed to remove favorite"})
+    }
+}
+
+module.exports={addFavorite,getFavorites,removeFavorite}
