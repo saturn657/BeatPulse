@@ -37,7 +37,9 @@ const getFavorites=async(req,res)=>{
             .populate("music")
             .sort({createdAt:-1})
 
-        res.json(favorites)
+        const music=favorites.map(item=>item.music)
+
+        res.json(music)
     }catch(error){
         res.status(500).json({message:"Failed to fetch favorites"})
     }
