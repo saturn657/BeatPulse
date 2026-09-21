@@ -1,5 +1,6 @@
 import Sidebar from "./components/Sidebar"
 import Navbar from "./components/Navbar"
+import Home from "./pages/Home"
 
 function App(){
   return(
@@ -8,13 +9,7 @@ function App(){
 
       <div className="flex-1">
         <Navbar/>
-
-        <main className="p-8">
-          <h2 className="text-3xl font-bold">Welcome to BeatPulse</h2>
-          <p className="mt-2 text-zinc-400">
-            Your music, your pulse.
-          </p>
-        </main>
+        <Home/>
       </div>
     </div>
   )
