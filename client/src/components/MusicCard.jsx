@@ -1,6 +1,9 @@
-function MusicCard({music}){
+function MusicCard({music,onSelect}){
   return(
-    <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4 hover:bg-zinc-800 transition">
+    <div
+      onClick={()=>onSelect(music)}
+      className="rounded-2xl bg-zinc-900 border border-zinc-800 p-4 hover:bg-zinc-800 transition cursor-pointer"
+    >
       <div className="aspect-square rounded-xl bg-zinc-800 overflow-hidden flex items-center justify-center">
         {music.coverImage ? (
           <img

@@ -1,9 +1,11 @@
 import {useEffect,useState} from "react"
 import MusicCard from "../components/MusicCard"
+import MusicPlayer from "../components/MusicPlayer"
 
 function Home(){
   const [music,setMusic]=useState([])
   const [loading,setLoading]=useState(true)
+  const [selectedMusic,setSelectedMusic]=useState(null)
 
   useEffect(()=>{
     const fetchMusic=async()=>{
@@ -58,11 +60,14 @@ function Home(){
               <MusicCard
                 key={item._id}
                 music={item}
+                onSelect={setSelectedMusic}
               />
             ))}
           </div>
         )}
       </section>
+
+      <MusicPlayer music={selectedMusic}/>
     </main>
   )
 }
