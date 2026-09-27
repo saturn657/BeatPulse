@@ -8,8 +8,8 @@ function MusicPlayer({music}){
   }
 
   return(
-    <div className="fixed bottom-0 left-64 right-0 h-20 bg-zinc-900 border-t border-zinc-800 px-6 flex items-center">
-      <div className="w-12 h-12 rounded-lg bg-zinc-800 overflow-hidden flex items-center justify-center">
+    <div className="fixed bottom-0 left-64 right-0 h-24 bg-zinc-900 border-t border-zinc-800 px-6 flex items-center gap-5">
+      <div className="w-14 h-14 rounded-lg bg-zinc-800 overflow-hidden flex items-center justify-center shrink-0">
         {music.coverImage ? (
           <img
             src={music.coverImage}
@@ -21,15 +21,19 @@ function MusicPlayer({music}){
         )}
       </div>
 
-      <div className="ml-4 min-w-0">
+      <div className="w-48 min-w-0">
         <p className="font-medium truncate">{music.title}</p>
         <p className="text-sm text-zinc-500 truncate">{music.artist}</p>
       </div>
 
-      <div className="ml-auto">
-        <button className="w-10 h-10 rounded-full bg-white text-black">
-          ▶
-        </button>
+      <div className="flex-1">
+        <audio
+          className="w-full"
+          controls
+          src={music.audioUrl}
+        >
+          Your browser does not support audio playback.
+        </audio>
       </div>
     </div>
   )
