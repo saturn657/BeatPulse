@@ -5,14 +5,15 @@ const jwt=require("jsonwebtoken")
 const registerUser=async(req,res)=>{
     try{
         const {name,email,password}=req.body
-const normalizedEmail=email?.trim().toLowerCase()
+        const normalizedEmail=email?.trim().toLowerCase()
 
         if(!name||!email||!password){
             return res.status(400).json({message:"All fields are required"})
         }
+
         if(password.length<6){
-    return res.status(400).json({message:"Password must be at least 6 characters"})
-}
+            return res.status(400).json({message:"Password must be at least 6 characters"})
+        }
 
         const existingUser=await User.findOne({email:normalizedEmail})
 
@@ -24,7 +25,7 @@ const normalizedEmail=email?.trim().toLowerCase()
 
         const user=await User.create({
             name,
-            eemail:normalizedEmail,
+            email:normalizedEmail,
             password:hashedPassword
         })
 
@@ -41,10 +42,6 @@ const normalizedEmail=email?.trim().toLowerCase()
     }
 }
 
-const getMe=(req,res)=>{
-    res.json(req.user)
-}
-
 const loginUser=async(req,res)=>{
     try{
         const {email,password}=req.body
@@ -53,7 +50,7 @@ const loginUser=async(req,res)=>{
             return res.status(400).json({message:"Email and password are required"})
         }
 
-        const user=await User.findOne({email})
+        const user=await User.findOne({email:email.trim().toLowerCase()})
 
         if(!user){
             return res.status(401).json({message:"Invalid email or password"})
@@ -77,11 +74,44 @@ const loginUser=async(req,res)=>{
             user:{
                 id:user._id,
                 name:user.name,
-                email:user.email
+                email:user.email,
+                profileImage:user.profileImage
             }
         })
     }catch(error){
         res.status(500).json({message:"Login failed"})
+    }
+}
+
+const getMe=(req,res)=>{
+    res.json(req.user)
+}
+
+const updateProfile=async(req,res)=>{
+    try{
+        const {name,profileImage}=req.body
+
+        if(name!==undefined){
+            req.user.name=name
+        }
+
+        if(profileImage!==undefined){
+            req.user.profileImage=profileImage
+        }
+
+        const user=await req.user.save()
+
+        res.json({
+            message:"Profile updated successfully",
+            user:{
+                id:user._id,
+                name:user.name,
+                email:user.email,
+                profileImage:user.profileImage
+            }
+        })
+    }catch(error){
+        res.status(500).json({message:"Profile update failed"})
     }
 }
 
