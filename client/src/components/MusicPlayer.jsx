@@ -1,4 +1,4 @@
-function MusicPlayer({music}){
+function MusicPlayer({music,currentIndex,onNext,onPrevious}){
   if(!music){
     return(
       <div className="fixed bottom-0 left-64 right-0 h-20 bg-zinc-900 border-t border-zinc-800 flex items-center justify-center">
@@ -26,11 +26,30 @@ function MusicPlayer({music}){
         <p className="text-sm text-zinc-500 truncate">{music.artist}</p>
       </div>
 
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onPrevious}
+          disabled={currentIndex<=0}
+          className="w-9 h-9 rounded-full bg-zinc-800 disabled:opacity-30"
+        >
+          ⏮
+        </button>
+
+        <button
+          onClick={onNext}
+          disabled={currentIndex>=999}
+          className="w-9 h-9 rounded-full bg-zinc-800"
+        >
+          ⏭
+        </button>
+      </div>
+
       <div className="flex-1">
         <audio
           className="w-full"
           controls
           src={music.audioUrl}
+          autoPlay
         >
           Your browser does not support audio playback.
         </audio>

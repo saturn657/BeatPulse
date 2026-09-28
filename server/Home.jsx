@@ -5,8 +5,8 @@ import MusicPlayer from "../components/MusicPlayer"
 function Home(){
   const [music,setMusic]=useState([])
   const [loading,setLoading]=useState(true)
-  const [selectedMusic,setSelectedMusic]=useState(null)
-
+const [selectedMusic,setSelectedMusic]=useState(null)
+const [currentIndex,setCurrentIndex]=useState(-1)
   useEffect(()=>{
     const fetchMusic=async()=>{
       try{
@@ -56,18 +56,38 @@ function Home(){
           </div>
         ) : (
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-5">
-            {music.map((item)=>(
+            {music.map((item,index)=>(
               <MusicCard
-                key={item._id}
-                music={item}
-                onSelect={setSelectedMusic}
-              />
+  key={item._id}
+  music={item}
+  onSelect={()=>{
+    setSelectedMusic(item)
+    setCurrentIndex(index)
+  }}
+/>
             ))}
           </div>
         )}
       </section>
 
-      <MusicPlayer music={selectedMusic}/>
+      <MusicPlayer
+  music={selectedMusic}
+  currentIndex={currentIndex}
+  onPrevious={()=>{
+    if(currentIndex>0){
+      const index=currentIndex-1
+      setCurrentIndex(index)
+      setSelectedMusic(music[index])
+    }
+  }}
+  onNext={()=>{
+    if(currentIndex<music.length-1){
+      const index=currentIndex+1
+      setCurrentIndex(index)
+      setSelectedMusic(music[index])
+    }
+  }}
+/>
     </main>
   )
 }
