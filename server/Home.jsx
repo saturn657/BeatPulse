@@ -7,21 +7,68 @@ function Home(){
   const [loading,setLoading]=useState(true)
   const [selectedMusic,setSelectedMusic]=useState(null)
   const [currentIndex,setCurrentIndex]=useState(-1)
+
   const [search,setSearch]=useState("")
+  const [genre,setGenre]=useState("")
+  const [artist,setArtist]=useState("")
+  const [album,setAlbum]=useState("")
+
+  const [categories,setCategories]=useState({
+    artists:[],
+    albums:[],
+    genres:[]
+  })
+
+  useEffect(()=>{
+    const fetchCategories=async()=>{
+      try{
+        const response=await fetch(
+          "http://localhost:5000/api/music/categories/all"
+        )
+
+        const data=await response.json()
+        setCategories(data)
+      }catch(error){
+        console.error("Failed to fetch categories")
+      }
+    }
+
+    fetchCategories()
+  },[])
 
   useEffect(()=>{
     const fetchMusic=async()=>{
       try{
         setLoading(true)
 
-        const url=search.trim()
-          ? `http://localhost:5000/api/music?search=${encodeURIComponent(search)}`
+        const params=new URLSearchParams()
+
+        if(search.trim()){
+          params.append("search",search.trim())
+        }
+
+        const url=params.toString()
+          ? `http://localhost:5000/api/music?${params.toString()}`
           : "http://localhost:5000/api/music"
 
         const response=await fetch(url)
         const data=await response.json()
 
-        setMusic(data)
+        let filtered=data
+
+        if(genre){
+          filtered=filtered.filter(item=>item.genre===genre)
+        }
+
+        if(artist){
+          filtered=filtered.filter(item=>item.artist===artist)
+        }
+
+        if(album){
+          filtered=filtered.filter(item=>item.album===album)
+        }
+
+        setMusic(filtered)
       }catch(error){
         console.error("Failed to fetch music")
       }finally{
@@ -32,7 +79,7 @@ function Home(){
     const timer=setTimeout(fetchMusic,300)
 
     return()=>clearTimeout(timer)
-  },[search])
+  },[search,genre,artist,album])
 
   const selectMusic=(item,index)=>{
     setSelectedMusic(item)
@@ -54,6 +101,15 @@ function Home(){
       setSelectedMusic(music[index])
     }
   }
+
+  const clearFilters=()=>{
+    setSearch("")
+    setGenre("")
+    setArtist("")
+    setAlbum("")
+  }
+
+  const hasFilters=search||genre||artist||album
 
   return(
     <main className="p-8 pb-32">
@@ -77,19 +133,72 @@ function Home(){
           placeholder="Search songs, artists, albums or genres..."
           className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 text-white outline-none placeholder:text-zinc-600 focus:border-zinc-600"
         />
+
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <select
+            value={genre}
+            onChange={(e)=>setGenre(e.target.value)}
+            className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-300 outline-none"
+          >
+            <option value="">All genres</option>
+
+            {categories.genres.map((item)=>(
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={artist}
+            onChange={(e)=>setArtist(e.target.value)}
+            className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-300 outline-none"
+          >
+            <option value="">All artists</option>
+
+            {categories.artists.map((item)=>(
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={album}
+            onChange={(e)=>setAlbum(e.target.value)}
+            className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-300 outline-none"
+          >
+            <option value="">All albums</option>
+
+            {categories.albums
+              .filter(item=>item)
+              .map((item)=>(
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+          </select>
+        </div>
+
+        {hasFilters && (
+          <button
+            onClick={clearFilters}
+            className="mt-3 text-sm text-zinc-500 hover:text-white"
+          >
+            Clear filters
+          </button>
+        )}
       </section>
 
       <section className="mt-12">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">
-            {search ? "Search Results" : "Music Library"}
+            {hasFilters ? "Filtered Music" : "Music Library"}
           </h2>
 
-          {search && (
-            <p className="text-sm text-zinc-500">
-              {music.length} result{music.length!==1?"s":""}
-            </p>
-          )}
+          <p className="text-sm text-zinc-500">
+            {music.length} result{music.length!==1?"s":""}
+          </p>
         </div>
 
         {loading ? (
@@ -99,14 +208,11 @@ function Home(){
         ) : music.length===0 ? (
           <div className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900 p-8 text-center">
             <p className="text-zinc-500">
-              {search ? "No music found." : "No music available yet."}
+              No music found.
             </p>
 
             <p className="mt-2 text-sm text-zinc-600">
-              {search
-                ? "Try a different song, artist or genre."
-                : "Add some music through the backend API."
-              }
+              Try changing your search or filters.
             </p>
           </div>
         ) : (
