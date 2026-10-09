@@ -18,9 +18,9 @@ function Sidebar(){
           Home
         </NavLink>
 
-        <NavLink to="/" className={linkClass}>
-          Search
-        </NavLink>
+        <NavLink to="/search" className={linkClass}>
+  Search
+</NavLink>
 
         <NavLink to="/library" className={linkClass}>
           Your Library
