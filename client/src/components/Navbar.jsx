@@ -1,4 +1,30 @@
+
+import {useState,useEffect} from "react"
+import {Link,useNavigate} from "react-router-dom"
+
 function Navbar(){
+  const [user,setUser]=useState(null)
+  const navigate=useNavigate()
+
+  useEffect(()=>{
+    const loadUser=()=>{
+      const savedUser=localStorage.getItem("user")
+      setUser(savedUser?JSON.parse(savedUser):null)
+    }
+
+    loadUser()
+    window.addEventListener("storage",loadUser)
+
+    return()=>window.removeEventListener("storage",loadUser)
+  },[])
+
+  const logout=()=>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    setUser(null)
+    navigate("/login")
+  }
+
   return(
     <header className="h-20 border-b border-zinc-800 flex items-center justify-between px-8">
       <div>
@@ -7,17 +33,31 @@ function Navbar(){
       </div>
 
       <div className="flex items-center gap-4">
-        <button className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center">
-          🔔
-        </button>
+        {user?(
+          <>
+            <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center font-semibold">
+              {user.name?.charAt(0).toUpperCase()||"U"}
+            </div>
 
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center">
-            U
-          </div>
+            <span className="text-sm text-zinc-300">
+              {user.name||"User"}
+            </span>
 
-          <span className="text-sm text-zinc-300">User</span>
-        </div>
+            <button
+              onClick={logout}
+              className="rounded-lg bg-zinc-800 px-4 py-2 text-sm hover:bg-zinc-700"
+            >
+              Logout
+            </button>
+          </>
+        ):(
+          <Link
+            to="/login"
+            className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-semibold hover:bg-purple-500"
+          >
+            Login / Register
+          </Link>
+        )}
       </div>
     </header>
   )
