@@ -1,6 +1,8 @@
+
 import {BrowserRouter,Routes,Route} from "react-router-dom"
 import Sidebar from "./components/Sidebar"
 import Navbar from "./components/Navbar"
+import ProtectedRoute from "./components/ProtectedRoute"
 import Home from "./pages/Home"
 import Search from "./pages/Search"
 import Favorites from "./pages/Favorites"
@@ -20,8 +22,11 @@ function App(){
             <Route path="/" element={<Home/>}/>
             <Route path="/search" element={<Search/>}/>
             <Route path="/library" element={<Library/>}/>
-            <Route path="/favorites" element={<Favorites/>}/>
             <Route path="/login" element={<Auth/>}/>
+
+            <Route element={<ProtectedRoute/>}>
+              <Route path="/favorites" element={<Favorites/>}/>
+            </Route>
           </Routes>
         </div>
       </div>
