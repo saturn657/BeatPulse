@@ -8,6 +8,7 @@ import Search from "./pages/Search"
 import Favorites from "./pages/Favorites"
 import Library from "./pages/Library"
 import Auth from "./pages/Auth"
+import Profile from "./pages/Profile"
 
 function App(){
   return(
@@ -26,6 +27,7 @@ function App(){
 
             <Route element={<ProtectedRoute/>}>
               <Route path="/favorites" element={<Favorites/>}/>
+              <Route path="/profile" element={<Profile/>}/>
             </Route>
           </Routes>
         </div>
