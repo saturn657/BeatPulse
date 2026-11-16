@@ -1,9 +1,8 @@
-
 import {useEffect,useState} from "react"
 import {useAuth} from "../context/AuthContext"
 
 function Profile(){
-  const {user,login}=useAuth()
+  const {user}=useAuth()
   const [name,setName]=useState(user?.name||"")
   const [profileImage,setProfileImage]=useState(user?.profileImage||"")
   const [email,setEmail]=useState(user?.email||"")
@@ -62,10 +61,11 @@ function Profile(){
         throw new Error(data.message||"Could not update profile")
       }
 
-      const savedUser={...user,...data}
+      const savedUser={...user,...data.user}
       localStorage.setItem("user",JSON.stringify(savedUser))
       setName(savedUser.name||"")
       setProfileImage(savedUser.profileImage||"")
+      setEmail(savedUser.email||"")
       setMessage("Profile updated successfully!")
     }catch(error){
       setMessage(error.message)
