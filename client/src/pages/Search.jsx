@@ -5,6 +5,7 @@ import MusicPlayer from "../components/MusicPlayer"
 function Search(){
   const [music,setMusic]=useState([])
   const [loading,setLoading]=useState(false)
+  const [searchError,setSearchError]=useState("")
   const [search,setSearch]=useState("")
   const [selectedMusic,setSelectedMusic]=useState(null)
   const [currentIndex,setCurrentIndex]=useState(-1)
@@ -37,9 +38,12 @@ function Search(){
   },[])
 
   useEffect(()=>{
+    const controller=new AbortController()
+
     const fetchMusic=async()=>{
       try{
         setLoading(true)
+        setSearchError("")
 
         const params=new URLSearchParams()
 
@@ -48,10 +52,19 @@ function Search(){
         }
 
         const response=await fetch(
-          `http://localhost:5000/api/music?${params.toString()}`
+          `http://localhost:5000/api/music?${params.toString()}`,
+          {signal:controller.signal}
         )
 
+        if(!response.ok){
+          throw new Error("Unable to load music. Please try again.")
+        }
+
         const data=await response.json()
+
+        if(!Array.isArray(data)){
+          throw new Error("The music response was invalid. Please try again.")
+        }
 
         let filtered=data
 
@@ -69,15 +82,23 @@ function Search(){
 
         setMusic(filtered)
       }catch(error){
-        console.error("Failed to search music")
+        if(error.name!=="AbortError"){
+          setSearchError(error.message||"Failed to search music. Please try again.")
+          setMusic([])
+        }
       }finally{
-        setLoading(false)
+        if(!controller.signal.aborted){
+          setLoading(false)
+        }
       }
     }
 
     const timer=setTimeout(fetchMusic,300)
 
-    return()=>clearTimeout(timer)
+    return()=>{
+      clearTimeout(timer)
+      controller.abort()
+    }
   },[search,genre,artist,album])
 
   const selectMusic=(item,index)=>{
@@ -198,9 +219,15 @@ function Search(){
         </div>
 
         {loading ? (
-          <p className="mt-6 text-zinc-500">
+          <p className="mt-6 text-zinc-500" role="status">
             Searching...
           </p>
+        ) : searchError ? (
+          <div className="mt-6 rounded-2xl border border-red-900/50 bg-red-950/20 p-6 text-center" role="alert">
+            <p className="text-red-300">
+              {searchError}
+            </p>
+          </div>
         ) : music.length===0 ? (
           <div className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900 p-8 text-center">
             <p className="text-zinc-400">
